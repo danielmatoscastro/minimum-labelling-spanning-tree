@@ -61,16 +61,6 @@ set EL[4] :=
 
 param sizeV := 10;
 
-#param sizeEL[0] := 2;
-
-#param sizeEL[1] := 2;
-
-#param sizeEL[2] := 2;
-
-#param sizeEL[3] := 2;
-
-#param sizeEL[4] := 1;
-
 param sizeEL := 
     0 4 
     1 4 
