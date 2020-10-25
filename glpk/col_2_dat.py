@@ -1,3 +1,4 @@
+from pathlib import Path
 
 class Instance:
     def __init__(self, nodes: set, edges: set, labels: set, edges_to_labels: dict):
@@ -79,4 +80,7 @@ class Instance:
             ';\n\n'
 
 if __name__ == '__main__':
-    Instance.load('./data/testFile_0_10_5.col').to_dat('./data/testFile_0_10_5.dat')
+    for path in Path('.', 'data').glob('*.col'):
+        old_name = path.absolute().as_posix()
+        new_name = path.absolute().as_posix().replace('col', 'dat')
+        Instance.load(old_name).to_dat(new_name)
