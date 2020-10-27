@@ -1,3 +1,4 @@
+from typing import List
 from .edge import Edge
 
 class Instance:
@@ -5,6 +6,14 @@ class Instance:
         self._nodes = nodes
         self._edges = edges
         self._labels = labels
+
+    @property
+    def nodes(self) -> List[int]:
+        return self._nodes
+
+    @property
+    def edges(self) -> List[Edge]:
+        return self._edges
 
     @staticmethod
     def load(path: str) -> "Instance":
