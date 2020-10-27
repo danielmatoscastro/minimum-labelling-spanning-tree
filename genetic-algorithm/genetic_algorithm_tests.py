@@ -27,5 +27,16 @@ class TestGeneticAlgorithm(unittest.TestCase):
         for solution in result:
             self.assertEqual(9, len(solution))
 
+    def test_generate_initial_population(self):
+        algorithm = self._build_algorithm()
+        population = algorithm._generate_initial_population()
+
+        result = algorithm._evaluate_population(population)
+
+        self.assertEqual(5, len(result))
+        for solution, fitness in result:
+            self.assertEqual(9, len(solution))
+            self.assertEqual(5, fitness)
+
 if __name__ == '__main__':
     unittest.main()

@@ -45,7 +45,14 @@ class GeneticAlgorithm:
         return expanded_edges
 
     def _evaluate_population(self, population: List[List[Edge]]) -> List[Tuple[List[Edge], int]]:
-        pass
+        result = []
+
+        for solution in population:
+            labels = [edge.l for edge in solution]
+            fitness = len(set(labels))
+            result.append((solution, fitness))
+        
+        return result
 
     def _selection_operator(self, population: List[Tuple[List[Edge], int]]) -> List[List[Edge]]:
         pass
