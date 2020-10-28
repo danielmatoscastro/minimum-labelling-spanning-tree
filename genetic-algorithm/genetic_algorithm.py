@@ -13,7 +13,7 @@ class GeneticAlgorithm:
         self._elitism_rate = elitism_rate
         random.seed(seed)
 
-    def run(self) -> List[Edge]:
+    def run(self) -> Tuple[List[Edge], int, float]:
         elite_size = ceil(self._elitism_rate*self._population_size)
         new_solutions_size = self._population_size - elite_size
         population = self._generate_initial_population()
@@ -31,19 +31,30 @@ class GeneticAlgorithm:
 
     def _generate_initial_population(self) ->  List[List[Edge]]:
         population = []
-
-        for root in random.sample(self._instance.nodes, k=self._population_size):
+        roots = random.sample(self._instance.nodes, k=self._population_size)
+        for root in roots:
             population.append(self._dfs_tree(root, [root, ]))
 
         return population
 
-    def _dfs_tree(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge] = []) -> List[Edge]:
-        edges = [edge for edge in self._instance.edges if edge.u == root and edge.v not in expanded_nodes]
+    def _dfs_tree(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge] = [], solution: List[Edge] = None) -> List[Edge]:
+        if not solution:
+            solution = self._instance.edges
+
+        edges = [edge 
+                for edge in solution 
+                if (edge.u == root and 
+                    edge.v not in expanded_nodes and 
+                    Edge(edge.v, edge.u, edge.l) not in expanded_edges) or 
+                    (edge.v == root and 
+                    edge.u not in expanded_nodes and 
+                    Edge(edge.u, edge.v, edge.l) not in expanded_edges)]
         
         for edge in edges:
-            expanded_nodes.append(edge.v)
+            new_root = edge.v if edge.v != root else edge.u
+            expanded_nodes.append(new_root)
             expanded_edges.append(edge)
-            self._dfs_tree(edge.v, expanded_nodes, expanded_edges)
+            self._dfs_tree(new_root, expanded_nodes, expanded_edges, solution)
 
         return expanded_edges
 
@@ -70,14 +81,32 @@ class GeneticAlgorithm:
 
         for i in range(new_solutions_size):
             father_1, father_2 = [solution for solution, _, _ in random.choices(population, weights=probs, k=2)]
-            graph = set(father_1 + father_2)
-            root = random.choice(graph)
-            new_solutions.append(self._dfs_tree(root, []))
+            graph = list(set(father_1 + father_2))
+            root = random.choice(self._instance.nodes)
+            new_solutions.append(self._dfs_tree(root, [root, ], [], graph))
 
         return new_solutions
 
     def _mutation_operator(self, population: List[List[Edge]]) -> List[List[Edge]]:
-        pass
+        new_solutions =[]
+
+        for solution in population:
+            should_mutate = random.choices([True, False], weights=[self._mutation_rate, 1-self._mutation_rate])[0]
+            if should_mutate:
+                edges_complement = [edge for edge in self._instance.edges if edge not in solution]
+                additional_edges_quant = ceil(0.20*len(edges_complement))
+                additional_edges = random.choices(edges_complement, k=additional_edges_quant)
+                edges_total = solution + additional_edges
+                root = random.choice(self._instance.nodes)
+                new_solutions.append(self._dfs_tree(root, [root, ], [], edges_total))
+            else:
+                new_solutions.append(solution)
+
+        return new_solutions
+
+    def _select_solution(self, population: List[List[Edge]]) -> Tuple[List[Edge], int, float]:
+        evaluated_pop = self._evaluate_population(population)
+        return min(evaluated_pop, key=lambda x: x[1])
 
     def _stopping_criterion(self, iteration: int) -> bool:
         return iteration == 10
