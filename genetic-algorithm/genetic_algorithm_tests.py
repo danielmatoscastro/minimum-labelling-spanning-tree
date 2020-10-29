@@ -32,9 +32,17 @@ class TestGeneticAlgorithm(unittest.TestCase):
         result = algorithm._evaluate_population(population)
 
         self.assertEqual(5, len(result))
-        for solution, fitness in result:
+        for solution, fitness, relative_fitness in result:
             self.assertEqual(9, len(solution))
             self.assertEqual(5, fitness)
+            self.assertEqual(0.2, relative_fitness)
+
+    def test_dfs_tree(self):
+        algorithm = self._build_algorithm()
+
+        result = algorithm._dfs_tree(0)
+
+        self.assertEqual(9, len(result))
 
 if __name__ == '__main__':
     unittest.main()

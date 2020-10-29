@@ -20,7 +20,7 @@ class GeneticAlgorithm:
         i = 1
 
         while not should_stop:
-            print(i)
+            print(f'iteration {i}')
             evaluated_pop = self._evaluate_population(population)
             elite = self._elitism_operator(evaluated_pop, elite_size)
             new_solutions = self._crossover_operator(evaluated_pop, new_solutions_size)
@@ -35,36 +35,36 @@ class GeneticAlgorithm:
         roots = random.choices(self._instance.nodes, k=self._population_size)
        
         for root in roots:
-            population.append(self._dfs_tree(root, [root, ]))
+            population.append(self._dfs_tree(root))
 
         return population
 
-    def _dfs_tree(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge] = [], solution: List[Edge] = None) -> List[Edge]:
+    def _dfs_tree(self, root: int, solution: List[Edge] = None) -> List[Edge]:
         if not solution:
             solution = self._instance.edges
 
-        edges = self._find_all_possible_edges(root, expanded_nodes, expanded_edges, solution)
-        
-        for edge in edges:
-            new_root = edge.v if edge.v != root else edge.u
-            expanded_nodes.append(new_root)
-            expanded_edges.append(edge)
-            self._dfs_tree(new_root, expanded_nodes, expanded_edges, solution)
+        return self._dfs_tree_internal(root, [root, ], [], solution)
+
+    def _dfs_tree_internal(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge], solution: List[Edge]) -> List[Edge]:
+        edges = self._find_all_possible_nodes(root, solution)
+
+        for node, edge in edges:
+            if node not in expanded_nodes:
+                expanded_nodes.append(node)
+                expanded_edges.append(edge)
+                self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
 
         return expanded_edges
 
-    def _find_all_possible_edges(self, root, expanded_nodes, expanded_edges, solution):
-        edges = []
-
+    def _find_all_possible_nodes(self, root, solution):
+        pairs = []
         for edge in solution:
-            edge_reverse = Edge(edge.v, edge.u, edge.l)
-            valid_and_starts_in_root = edge.u == root and edge.v not in expanded_nodes and edge_reverse not in expanded_edges
-            valid_and_ends_in_root = edge.v == root and edge.u not in expanded_nodes and edge not in expanded_edges
-            
-            if valid_and_starts_in_root or valid_and_ends_in_root:
-                edges.append(edge)
+            if edge.u == root:
+                pairs.append((edge.v, edge))
+            elif edge.v == root:
+                pairs.append((edge.u, edge))
 
-        return edges
+        return pairs
 
     def _evaluate_population(self, population: List[List[Edge]]) -> List[Tuple[List[Edge], int, float]]:
         result = []
@@ -91,7 +91,7 @@ class GeneticAlgorithm:
             father_1, father_2 = [solution for solution, _, _ in random.choices(population, weights=probs, k=2)]
             graph = list(set(father_1 + father_2))
             root = random.choice(self._instance.nodes)
-            new_solutions.append(self._dfs_tree(root, [root, ], [], graph))
+            new_solutions.append(self._dfs_tree(root, graph))
 
         return new_solutions
 
@@ -106,7 +106,7 @@ class GeneticAlgorithm:
                 additional_edges = random.choices(edges_complement, k=additional_edges_quant)
                 edges_total = solution + additional_edges
                 root = random.choice(self._instance.nodes)
-                new_solutions.append(self._dfs_tree(root, [root, ], [], edges_total))
+                new_solutions.append(self._dfs_tree(root, edges_total))
             else:
                 new_solutions.append(solution)
 
