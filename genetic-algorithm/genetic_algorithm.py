@@ -46,19 +46,25 @@ class GeneticAlgorithm:
         return self._dfs_tree_internal(root, {root, }, [], solution)
 
     def _dfs_tree_internal(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge], solution: List[Edge]) -> List[Edge]:
-        for edge in solution:
-            node = None
-            if edge.u != root:
-                node = edge.u
-            elif edge.v != root:
-                node = edge.v
-            
-            if node and node not in expanded_nodes:
-                expanded_nodes.add(node)
-                expanded_edges.append(edge)
-                self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
+            edges = self._find_all_possible_nodes(root, solution)
 
-        return expanded_edges
+            for node, edge in edges:
+                if node not in expanded_nodes:
+                    expanded_nodes.add(node)
+                    expanded_edges.append(edge)
+                    self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
+
+            return expanded_edges
+
+    def _find_all_possible_nodes(self, root, solution):
+        pairs = []
+        for edge in solution:
+            if edge.u == root:
+                pairs.append((edge.v, edge))
+            elif edge.v == root:
+                pairs.append((edge.u, edge))
+
+        return pairs
 
     def _evaluate_population(self, population: List[List[Edge]]) -> List[Tuple[List[Edge], int, float]]:
         result = []
@@ -94,8 +100,11 @@ class GeneticAlgorithm:
 
         for solution in population:
             should_mutate = random.choices([True, False], weights=[self._mutation_rate, 1-self._mutation_rate])[0]
+
+            # 'in' operator is EXTREMELY FASTER with sets. 55s with lists, 16s with sets.
+            solution_set = set(solution)
             if should_mutate:
-                edges_complement = [edge for edge in self._instance.edges if edge not in solution]
+                edges_complement = [edge for edge in self._instance.edges if edge not in solution_set]
                 additional_edges_quant = ceil(0.20*len(edges_complement))
                 additional_edges = random.choices(edges_complement, k=additional_edges_quant)
                 edges_total = solution + additional_edges
