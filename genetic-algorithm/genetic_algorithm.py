@@ -43,28 +43,22 @@ class GeneticAlgorithm:
         if not solution:
             solution = self._instance.edges
 
-        return self._dfs_tree_internal(root, [root, ], [], solution)
+        return self._dfs_tree_internal(root, {root, }, [], solution)
 
     def _dfs_tree_internal(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge], solution: List[Edge]) -> List[Edge]:
-        edges = self._find_all_possible_nodes(root, solution)
-
-        for node, edge in edges:
-            if node not in expanded_nodes:
-                expanded_nodes.append(node)
+        for edge in solution:
+            node = None
+            if edge.u != root:
+                node = edge.u
+            elif edge.v != root:
+                node = edge.v
+            
+            if node and node not in expanded_nodes:
+                expanded_nodes.add(node)
                 expanded_edges.append(edge)
                 self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
 
         return expanded_edges
-
-    def _find_all_possible_nodes(self, root, solution):
-        pairs = []
-        for edge in solution:
-            if edge.u == root:
-                pairs.append((edge.v, edge))
-            elif edge.v == root:
-                pairs.append((edge.u, edge))
-
-        return pairs
 
     def _evaluate_population(self, population: List[List[Edge]]) -> List[Tuple[List[Edge], int, float]]:
         result = []
@@ -117,4 +111,4 @@ class GeneticAlgorithm:
         return min(evaluated_pop, key=lambda x: x[1])
 
     def _stopping_criterion(self, iteration: int) -> bool:
-        return iteration == 100
+        return iteration == 200
