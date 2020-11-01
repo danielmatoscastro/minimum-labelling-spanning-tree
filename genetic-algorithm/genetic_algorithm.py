@@ -1,10 +1,21 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Set
 from math import ceil
 from model.instance import Instance
 from model.edge import Edge
 
 class GeneticAlgorithm:
+    '''Genetic Algorithm to solve the MLST problem.
+   
+    After instantiating, just call the run() method.
+
+    Args:
+        instance (Instance): MLST instance to be solved.
+        seed (int): RNG seed.
+        population_size (int): Number of simultaneous solutions.
+        mutation_rate (float): Probability of a solution mutate.
+        elitism_rate (float): Percentage of best solutions to be preserved across iterations.
+    '''
     def __init__(self, instance: Instance, seed: int, population_size: int, mutation_rate: float, elitism_rate: float):
         self._instance = instance
         self._population_size = population_size
@@ -14,6 +25,11 @@ class GeneticAlgorithm:
         random.seed(seed)
 
     def run(self) -> Tuple[List[Edge], int, float]:
+        '''Runs the algorithm until reaching a stop criteria.
+
+        Returns:
+            Tuple with solution, absolute fitness, and relative fitness (in this order).
+        '''
         elite_size = ceil(self._elitism_rate*self._population_size)
         new_solutions_size = self._population_size - elite_size
         population = self._generate_initial_population()
@@ -32,6 +48,15 @@ class GeneticAlgorithm:
         return self._select_solution(population)
 
     def _generate_initial_population(self) ->  List[List[Edge]]:
+        ''' Generates the initial solutions.
+        
+        Each spanning tree is created by recording the selected edges during a DFS on the whole graph.
+        
+        Each DFS runs with a random root.
+        
+        Returns:
+            List with initial candidate solutions.    
+        '''
         population = []
         roots = random.choices(self._instance.nodes, k=self._population_size)
        
@@ -41,23 +66,58 @@ class GeneticAlgorithm:
         return population
 
     def _dfs_tree(self, root: int, solution: List[Edge] = None) -> List[Edge]:
+        '''Generates a spanning tree through DFS.
+
+        Args:
+            root (int): Initial spanning tree node.
+            solution (List[Edge], optional): Graph to be traversed. Defaults to None.
+                If its value is falsy (like the `None` default), then `self._instance.edges` is used.
+        
+        Returns:
+            Spanning tree.
+        '''
         if not solution:
             solution = self._instance.edges
 
         return self._dfs_tree_internal(root, {root, }, [], solution)
 
-    def _dfs_tree_internal(self, root: int, expanded_nodes: List[int], expanded_edges: List[Edge], solution: List[Edge]) -> List[Edge]:
-            edges = self._find_all_possible_nodes(root, solution)
+    def _dfs_tree_internal(self, root: int, expanded_nodes: Set[int], expanded_edges: List[Edge], solution: List[Edge]) -> List[Edge]:
+        '''Generates a spanning tree through DFS.
 
-            for node, edge in edges:
-                if node not in expanded_nodes:
-                    expanded_nodes.add(node)
-                    expanded_edges.append(edge)
-                    self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
+        This method must not be used directly. Use the wrapper `self._dfs_tree` instead.
 
-            return expanded_edges
+        Args:
+            root (int): Initial spanning tree node.
+            expanded_nodes (Set[int]): Nodes already visited.
+            expanded_edges (List[Edge]): Edges already choosed.
+            solution (List[Edge]): Graph being traversed.
 
-    def _find_all_possible_nodes(self, root, solution):
+        Returns:
+            Spanning tree.
+        '''
+        edges = self._find_all_possible_nodes(root, solution)
+
+        for node, edge in edges:
+            if node not in expanded_nodes:
+                expanded_nodes.add(node)
+                expanded_edges.append(edge)
+                self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
+
+        return expanded_edges
+
+    def _find_all_possible_nodes(self, root: int, solution: List[Edge]) -> List[Tuple[int, Edge]]:
+        '''Generates a list with all neighbors of root.
+
+        The output is a list of pairs, with a node `u` as the first component and an edge `(root, u)`
+        or `(u, root)` as second.
+
+        Args:
+            root (int): Node whose neighbors will be found.
+            solution (List[Édge]): Graph being traversed.
+
+        Returns:
+            All neighbors of root and the edges between them.
+        '''
         pairs = []
         for edge in solution:
             if edge.u == root:
@@ -68,6 +128,15 @@ class GeneticAlgorithm:
         return pairs
 
     def _evaluate_population(self, population: List[List[Edge]]) -> List[Tuple[List[Edge], int, float]]:
+        '''Computes the absolute and relative fitness for each solution.
+
+        Args:
+            population (List[List[Edge]]): Solutions whose fitness will be calculated.
+
+        Returns:
+            A list of tuples with a solution as the first component, the absolute fitness as second 
+                and the relative fitness as third.
+        '''
         result = []
 
         for solution in population:
@@ -81,10 +150,32 @@ class GeneticAlgorithm:
         return result
 
     def _elitism_operator(self, population: List[Tuple[List[Edge], int, float]], elite_size: int) -> List[List[Edge]]:
+        '''Generates a list with the best solutions.
+
+        Args:
+            population (List[Tuple[List[Edge], int, float]]): Popolation already evaluated.
+            elite_size (int): Number of best solutions to be selected.
+
+        Returns:
+            List of `elite_size` best solutions.
+        '''
         sorted_population = sorted(population, key=lambda x: x[1])
         return [solution for solution, _, _ in sorted_population[0:elite_size]]
 
     def _crossover_operator(self, population: List[Tuple[List[Edge], int, float]], new_solutions_size: int) -> List[List[Edge]]:
+        '''Produces a new population applying crossover in the current population.
+
+        This method implements the `roulette method`.
+        
+        Two solutions are combined by merging its edges in a list and applying DFS from a random root.
+
+        Args:
+            population (List[Tuple[List[Edge], int, float]]): Current population already evaluated.
+            new_solutions_size (int): Size of new population.
+
+        Returns:
+            New population.
+        '''
         new_solutions = []
         probs = [relative_fitness for _, _, relative_fitness in population]
 
@@ -97,6 +188,19 @@ class GeneticAlgorithm:
         return new_solutions
 
     def _mutation_operator(self, population: List[List[Edge]]) -> List[List[Edge]]:
+        '''Applies random mutations in population.
+
+        Each solution will be mutated with probability `self._mutation_rate`.
+        
+        The mutation is doing by merging the solution edges with 20% of the graph edges
+        that aren't in solution and applying DFS in this list, starting from a random root.
+
+        Args:
+            population (List[List[Edge]]): Population to be mutated.
+
+        Returns:
+            New population.
+        '''
         new_solutions =[]
 
         for solution in population:
@@ -116,8 +220,24 @@ class GeneticAlgorithm:
         return new_solutions
 
     def _select_solution(self, population: List[List[Edge]]) -> Tuple[List[Edge], int, float]:
+        '''Returns the best solution of a population.
+
+        Args:
+            population (List[List[Edge]]): Population.
+
+        Returns:
+            Best solution from the population.
+        '''
         evaluated_pop = self._evaluate_population(population)
         return min(evaluated_pop, key=lambda x: x[1])
 
     def _stopping_criterion(self, iteration: int) -> bool:
+        '''Decides if must stop the algorithm.
+
+        Args:
+            iteration (int):  Number of executed iterations.
+
+        Returns:
+            True if the algorithm must stop. False otherwise.
+        '''
         return iteration == 200
