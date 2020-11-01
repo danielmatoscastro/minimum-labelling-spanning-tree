@@ -1,0 +1,11 @@
+{
+  "parameters": {
+    "instance": "data/testFile_9_75_60.col",
+    "seed": 2.0,
+    "population-size": 100,
+    "mutation-rate": 0.5,
+    "elitism-rate": 0.3
+  },
+  "solution-fitness": 23,
+  "execution-time": 20.61639666557312
+}
