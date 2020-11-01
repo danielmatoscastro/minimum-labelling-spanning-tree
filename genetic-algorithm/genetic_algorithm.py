@@ -10,6 +10,7 @@ class GeneticAlgorithm:
         self._population_size = population_size
         self._mutation_rate = mutation_rate
         self._elitism_rate = elitism_rate
+        self._edges_set = set(self._instance.edges)
         random.seed(seed)
 
     def run(self) -> Tuple[List[Edge], int, float]:
@@ -100,11 +101,10 @@ class GeneticAlgorithm:
 
         for solution in population:
             should_mutate = random.choices([True, False], weights=[self._mutation_rate, 1-self._mutation_rate])[0]
-
             # 'in' operator is EXTREMELY FASTER with sets. 55s with lists, 16s with sets.
             solution_set = set(solution)
             if should_mutate:
-                edges_complement = [edge for edge in self._instance.edges if edge not in solution_set]
+                edges_complement = list(self._edges_set.difference(solution_set))
                 additional_edges_quant = ceil(0.20*len(edges_complement))
                 additional_edges = random.choices(edges_complement, k=additional_edges_quant)
                 edges_total = solution + additional_edges
