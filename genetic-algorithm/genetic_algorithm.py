@@ -4,6 +4,10 @@ from math import ceil
 from model.instance import Instance
 from model.edge import Edge
 
+MAX_ITERATIONS = 200
+MAX_ITERATIONS_WITHOUT_IMPROVING = 25
+BEST_POSSIBLE_FITNESS = 1
+
 class GeneticAlgorithm:
     '''Genetic Algorithm to solve the MLST problem.
    
@@ -35,17 +39,23 @@ class GeneticAlgorithm:
         population = self._generate_initial_population()
         should_stop = False
         i = 1
-
+        last_improvement = 1
+        best_solution = None
         while not should_stop:
             print(f'iteration {i}')
             evaluated_pop = self._evaluate_population(population)
             elite = self._elitism_operator(evaluated_pop, elite_size)
+
+            if not best_solution or best_solution[1] > evaluated_pop[0][1]:
+                best_solution = evaluated_pop[0]
+                last_improvement = i
+
             new_solutions = self._crossover_operator(evaluated_pop, new_solutions_size)
             population = elite + self._mutation_operator(new_solutions)
-            should_stop = self._stopping_criterion(i)
+            should_stop = self._stopping_criterion(best_solution, last_improvement, i)
             i += 1
 
-        return self._select_solution(population)
+        return best_solution
 
     def _generate_initial_population(self) ->  List[List[Edge]]:
         ''' Generates the initial solutions.
@@ -135,7 +145,8 @@ class GeneticAlgorithm:
 
         Returns:
             A list of tuples with a solution as the first component, the absolute fitness as second 
-                and the relative fitness as third.
+                and the relative fitness as third. The result is sorted by absolute fitness, 
+                in ascending order.
         '''
         result = []
 
@@ -146,21 +157,20 @@ class GeneticAlgorithm:
         
         fitness_sum = sum([fitness for _, fitness in result])
         result = [(solution, fitness, fitness/fitness_sum) for solution, fitness in result]
-
-        return result
+        sorted_result = sorted(result, key=lambda x: x[1])
+        return sorted_result
 
     def _elitism_operator(self, population: List[Tuple[List[Edge], int, float]], elite_size: int) -> List[List[Edge]]:
         '''Generates a list with the best solutions.
 
         Args:
-            population (List[Tuple[List[Edge], int, float]]): Popolation already evaluated.
+            population (List[Tuple[List[Edge], int, float]]): Popolation already evaluated and sorted.
             elite_size (int): Number of best solutions to be selected.
 
         Returns:
             List of `elite_size` best solutions.
         '''
-        sorted_population = sorted(population, key=lambda x: x[1])
-        return [solution for solution, _, _ in sorted_population[0:elite_size]]
+        return [solution for solution, _, _ in population[0:elite_size]]
 
     def _crossover_operator(self, population: List[Tuple[List[Edge], int, float]], new_solutions_size: int) -> List[List[Edge]]:
         '''Produces a new population applying crossover in the current population.
@@ -192,7 +202,7 @@ class GeneticAlgorithm:
 
         Each solution will be mutated with probability `self._mutation_rate`.
         
-        The mutation is doing by merging the solution edges with 20% of the graph edges
+        The mutation is doing by merging the solution edges with 10% of the graph edges
         that aren't in solution and applying DFS in this list, starting from a random root.
 
         Args:
@@ -209,7 +219,7 @@ class GeneticAlgorithm:
             solution_set = set(solution)
             if should_mutate:
                 edges_complement = list(self._edges_set.difference(solution_set))
-                additional_edges_quant = ceil(0.20*len(edges_complement))
+                additional_edges_quant = ceil(0.10*len(edges_complement))
                 additional_edges = random.choices(edges_complement, k=additional_edges_quant)
                 edges_total = solution + additional_edges
                 root = random.choice(self._instance.nodes)
@@ -231,13 +241,18 @@ class GeneticAlgorithm:
         evaluated_pop = self._evaluate_population(population)
         return min(evaluated_pop, key=lambda x: x[1])
 
-    def _stopping_criterion(self, iteration: int) -> bool:
+    def _stopping_criterion(self, best_solution: Tuple[List[Edge], int, float], last_improvement: int, iteration: int) -> bool:
         '''Decides if must stop the algorithm.
 
         Args:
+            best_solution (Tuple[List[Edge], int, float]): Best solution found in the last iteration,
+                already evaluated. 
+            last_improvement (int): Last iteration in which a better solution was found.
             iteration (int):  Number of executed iterations.
 
         Returns:
             True if the algorithm must stop. False otherwise.
         '''
-        return iteration == 200
+        return best_solution[1] == BEST_POSSIBLE_FITNESS or \
+                iteration-last_improvement == MAX_ITERATIONS_WITHOUT_IMPROVING or \
+                iteration == MAX_ITERATIONS
