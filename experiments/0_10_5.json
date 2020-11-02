@@ -1,0 +1,119 @@
+{
+  "execution-1": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 1,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 5.348056793212891
+  },
+  "execution-2": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 2,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 5.744948148727417
+  },
+  "execution-3": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 3,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 5.999646186828613
+  },
+  "execution-4": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 4,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.339482307434082
+  },
+  "execution-5": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 5,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.338399887084961
+  },
+  "execution-6": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 6,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.2446534633636475
+  },
+  "execution-7": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 7,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.499387264251709
+  },
+  "execution-8": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 8,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.403693199157715
+  },
+  "execution-9": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 9,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.514516353607178
+  },
+  "execution-10": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 10,
+      "population-size": 500,
+      "mutation-rate": 0.3,
+      "elitism-rate": 0.3
+    },
+    "solution-fitness": 5,
+    "execution-time": 6.466026544570923
+  },
+  "result": {
+    "mean-solutions": 5.0,
+    "mean-times": 6.189881014823913,
+    "std-solutions": 0.0,
+    "best-solution": 5,
+    "worst-solution": 5
+  }
+}

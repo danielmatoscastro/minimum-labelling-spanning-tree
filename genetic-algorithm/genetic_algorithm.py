@@ -4,8 +4,8 @@ from math import ceil
 from model.instance import Instance
 from model.edge import Edge
 
-MAX_ITERATIONS = 200
-MAX_ITERATIONS_WITHOUT_IMPROVING = 25
+MAX_ITERATIONS = 500
+MAX_ITERATIONS_WITHOUT_IMPROVING = 200
 BEST_POSSIBLE_FITNESS = 1
 
 class GeneticAlgorithm:
@@ -106,6 +106,7 @@ class GeneticAlgorithm:
             Spanning tree.
         '''
         edges = self._find_all_possible_nodes(root, solution)
+        random.shuffle(edges)
 
         for node, edge in edges:
             if node not in expanded_nodes:

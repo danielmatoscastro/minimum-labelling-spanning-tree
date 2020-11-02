@@ -37,7 +37,7 @@ def run(file, seed, population_size, mutation_rate, elitism_rate, output_file):
     }
 
     with open(output_file, mode='w') as out_file:
-        out_file.write(json.dumps(output, indent=2))
+        out_file.write(json.dumps(output, indent=2))        
 
 if __name__ == '__main__':
     run()
