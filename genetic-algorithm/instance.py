@@ -1,23 +1,22 @@
 from collections import defaultdict
 from typing import List, DefaultDict, Set, Tuple
-from .edge import Edge
 
 class Instance:
-    def __init__(self, nodes: list = [], edges: list = [], labels: list = []):
+    def __init__(self, nodes: List = [], edges: List = [], labels: List = []):
         self._nodes = nodes
         self._edges = edges
         self._labels = labels
         self._adjacency_list = defaultdict(set)
         for edge in self._edges:
-            self._adjacency_list[edge.u].add((edge.v, edge.l))
-            self._adjacency_list[edge.v].add((edge.u, edge.l))
+            self._adjacency_list[edge[0]].add((edge[1], edge[2]))
+            self._adjacency_list[edge[1]].add((edge[0], edge[2]))
 
     @property
     def nodes(self) -> List[int]:
         return self._nodes
 
     @property
-    def edges(self) -> List[Edge]:
+    def edges(self) -> List[Tuple[int, int, int]]:
         return self._edges
 
     @property
@@ -40,7 +39,7 @@ class Instance:
                 nodes.add(numbers[0])
                 nodes.add(numbers[1])
 
-                edges.add(Edge(*numbers))
+                edges.add(tuple(numbers))
 
                 labels.add(numbers[2])
 
