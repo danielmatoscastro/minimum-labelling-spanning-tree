@@ -32,6 +32,7 @@ class Instance:
             labels = set()
 
             file.readline()
+            file.readline()
             for line in file.readlines():
                 numbers = line.strip().split(' ')
                 numbers = [int(number) for number in numbers]
