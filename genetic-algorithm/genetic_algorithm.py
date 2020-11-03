@@ -1,11 +1,11 @@
+from collections import defaultdict
 import random
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, DefaultDict
 from math import ceil
 from model.instance import Instance
-from model.edge import Edge
 
-MAX_ITERATIONS = 500
-MAX_ITERATIONS_WITHOUT_IMPROVING = 200
+MAX_ITERATIONS = 2000
+MAX_ITERATIONS_WITHOUT_IMPROVING = 2000
 BEST_POSSIBLE_FITNESS = 1
 
 class GeneticAlgorithm:
@@ -14,21 +14,20 @@ class GeneticAlgorithm:
     After instantiating, just call the run() method.
 
     Args:
-        instance (Instance): MLST instance to be solved.
-        seed (int): RNG seed.
-        population_size (int): Number of simultaneous solutions.
-        mutation_rate (float): Probability of a solution mutate.
-        elitism_rate (float): Percentage of best solutions to be preserved across iterations.
+        instance: MLST instance to be solved.
+        seed: RNG seed.
+        population_size: Number of simultaneous solutions.
+        mutation_rate: Probability of a solution mutate.
+        elitism_rate: Percentage of best solutions to be preserved across iterations.
     '''
     def __init__(self, instance: Instance, seed: int, population_size: int, mutation_rate: float, elitism_rate: float):
         self._instance = instance
         self._population_size = population_size
         self._mutation_rate = mutation_rate
         self._elitism_rate = elitism_rate
-        self._edges_set = set(self._instance.edges)
         random.seed(seed)
 
-    def run(self) -> Tuple[List[Edge], int, float]:
+    def run(self) -> Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]:
         '''Runs the algorithm until reaching a stop criteria.
 
         Returns:
@@ -57,7 +56,7 @@ class GeneticAlgorithm:
 
         return best_solution
 
-    def _generate_initial_population(self) ->  List[List[Edge]]:
+    def _generate_initial_population(self) ->  List[DefaultDict[int, Set[Tuple[int, int]]]]:
         ''' Generates the initial solutions.
         
         Each spanning tree is created by recording the selected edges during a DFS on the whole graph.
@@ -75,74 +74,53 @@ class GeneticAlgorithm:
 
         return population
 
-    def _dfs_tree(self, root: int, solution: List[Edge] = None) -> List[Edge]:
+    def _dfs_tree(self, root: int, solution: DefaultDict[int, Set[Tuple[int, int]]] = None) -> DefaultDict[int, Set[Tuple[int, int]]]:
         '''Generates a spanning tree through DFS.
 
         Args:
-            root (int): Initial spanning tree node.
-            solution (List[Edge], optional): Graph to be traversed. Defaults to None.
-                If its value is falsy (like the `None` default), then `self._instance.edges` is used.
+            root: Initial spanning tree node.
+            solution: Graph to be traversed. Defaults to None.
+                If its value is falsy (like the `None` default), then `self._instance.adjacency_list` is used.
         
         Returns:
             Spanning tree.
         '''
         if not solution:
-            solution = self._instance.edges
+            solution = self._instance.adjacency_list
 
-        return self._dfs_tree_internal(root, {root, }, [], solution)
+        return self._dfs_tree_internal(root, {root, }, defaultdict(set), solution)
 
-    def _dfs_tree_internal(self, root: int, expanded_nodes: Set[int], expanded_edges: List[Edge], solution: List[Edge]) -> List[Edge]:
+    def _dfs_tree_internal(self, root: int, expanded_nodes: Set[int], new_solution: DefaultDict[int, Set[Tuple[int, int]]], solution: DefaultDict[int, Set[Tuple[int, int]]]) -> DefaultDict[int, Set[Tuple[int, int]]]:
         '''Generates a spanning tree through DFS.
 
         This method must not be used directly. Use the wrapper `self._dfs_tree` instead.
 
         Args:
-            root (int): Initial spanning tree node.
-            expanded_nodes (Set[int]): Nodes already visited.
-            expanded_edges (List[Edge]): Edges already choosed.
-            solution (List[Edge]): Graph being traversed.
+            root: Initial spanning tree node.
+            expanded_nodes: Nodes already visited.
+            new_solution: Solution being calculated.
+            solution: Graph being traversed.
 
         Returns:
             Spanning tree.
         '''
-        edges = self._find_all_possible_nodes(root, solution)
-        random.shuffle(edges)
+        neighbors = list(solution[root])
+        random.shuffle(neighbors)
 
-        for node, edge in edges:
-            if node not in expanded_nodes:
-                expanded_nodes.add(node)
-                expanded_edges.append(edge)
-                self._dfs_tree_internal(node, expanded_nodes, expanded_edges, solution)
+        for neighbor, label in neighbors:
+            if neighbor not in expanded_nodes:
+                expanded_nodes.add(neighbor)
+                new_solution[root].add((neighbor, label))
+                new_solution[neighbor].add((root, label))
+                self._dfs_tree_internal(neighbor, expanded_nodes, new_solution, solution)
 
-        return expanded_edges
+        return new_solution
 
-    def _find_all_possible_nodes(self, root: int, solution: List[Edge]) -> List[Tuple[int, Edge]]:
-        '''Generates a list with all neighbors of root.
-
-        The output is a list of pairs, with a node `u` as the first component and an edge `(root, u)`
-        or `(u, root)` as second.
-
-        Args:
-            root (int): Node whose neighbors will be found.
-            solution (List[Édge]): Graph being traversed.
-
-        Returns:
-            All neighbors of root and the edges between them.
-        '''
-        pairs = []
-        for edge in solution:
-            if edge.u == root:
-                pairs.append((edge.v, edge))
-            elif edge.v == root:
-                pairs.append((edge.u, edge))
-
-        return pairs
-
-    def _evaluate_population(self, population: List[List[Edge]]) -> List[Tuple[List[Edge], int, float]]:
+    def _evaluate_population(self, population: List[DefaultDict[int, Set[Tuple[int, int]]]]) -> List[Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]]:
         '''Computes the absolute and relative fitness for each solution.
 
         Args:
-            population (List[List[Edge]]): Solutions whose fitness will be calculated.
+            population: Solutions whose fitness will be calculated.
 
         Returns:
             A list of tuples with a solution as the first component, the absolute fitness as second 
@@ -152,8 +130,11 @@ class GeneticAlgorithm:
         result = []
 
         for solution in population:
-            labels = [edge.l for edge in solution]
-            fitness = len(set(labels))
+            labels = set()
+            for edges_list in solution.values():
+                for _, label in edges_list:
+                    labels.add(label)
+            fitness = len(labels)
             result.append((solution, fitness))
         
         fitness_sum = sum([fitness for _, fitness in result])
@@ -161,7 +142,7 @@ class GeneticAlgorithm:
         sorted_result = sorted(result, key=lambda x: x[1])
         return sorted_result
 
-    def _elitism_operator(self, population: List[Tuple[List[Edge], int, float]], elite_size: int) -> List[List[Edge]]:
+    def _elitism_operator(self, population: List[Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]], elite_size: int) -> List[DefaultDict[int, Set[Tuple[int, int]]]]:
         '''Generates a list with the best solutions.
 
         Args:
@@ -173,16 +154,16 @@ class GeneticAlgorithm:
         '''
         return [solution for solution, _, _ in population[0:elite_size]]
 
-    def _crossover_operator(self, population: List[Tuple[List[Edge], int, float]], new_solutions_size: int) -> List[List[Edge]]:
+    def _crossover_operator(self, population: List[Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]], new_solutions_size: int) -> List[DefaultDict[int, Set[Tuple[int, int]]]]:
         '''Produces a new population applying crossover in the current population.
 
         This method implements the `roulette method`.
         
-        Two solutions are combined by merging its edges in a list and applying DFS from a random root.
+        Two solutions are combined by merging its edges and applying DFS from a random root.
 
         Args:
-            population (List[Tuple[List[Edge], int, float]]): Current population already evaluated.
-            new_solutions_size (int): Size of new population.
+            population: Current population already evaluated.
+            new_solutions_size: Size of new population.
 
         Returns:
             New population.
@@ -192,22 +173,25 @@ class GeneticAlgorithm:
 
         for i in range(new_solutions_size):
             father_1, father_2 = [solution for solution, _, _ in random.choices(population, weights=probs, k=2)]
-            graph = list(set(father_1 + father_2))
+            child = defaultdict(Set)
+            for node in self._instance.nodes:
+                child[node] = father_1[node].union(father_2[node])
+            
             root = random.choice(self._instance.nodes)
-            new_solutions.append(self._dfs_tree(root, graph))
+            new_solutions.append(self._dfs_tree(root, child))
 
         return new_solutions
 
-    def _mutation_operator(self, population: List[List[Edge]]) -> List[List[Edge]]:
+    def _mutation_operator(self, population: List[DefaultDict[int, Set[Tuple[int, int]]]]) ->List[DefaultDict[int, Set[Tuple[int, int]]]]:
         '''Applies random mutations in population.
 
         Each solution will be mutated with probability `self._mutation_rate`.
         
-        The mutation is doing by merging the solution edges with 10% of the graph edges
-        that aren't in solution and applying DFS in this list, starting from a random root.
+        The mutation is doing by selecting a random node as root and setting its neigbors as all neighbors from the problem instance.
+        Lastly, we apply DFS in this solution, starting from selected root.
 
         Args:
-            population (List[List[Edge]]): Population to be mutated.
+            population: Population to be mutated.
 
         Returns:
             New population.
@@ -217,24 +201,22 @@ class GeneticAlgorithm:
         for solution in population:
             should_mutate = random.choices([True, False], weights=[self._mutation_rate, 1-self._mutation_rate])[0]
             # 'in' operator is EXTREMELY FASTER with sets. 55s with lists, 16s with sets.
-            solution_set = set(solution)
             if should_mutate:
-                edges_complement = list(self._edges_set.difference(solution_set))
-                additional_edges_quant = ceil(0.10*len(edges_complement))
-                additional_edges = random.choices(edges_complement, k=additional_edges_quant)
-                edges_total = solution + additional_edges
                 root = random.choice(self._instance.nodes)
-                new_solutions.append(self._dfs_tree(root, edges_total))
+                solution[root] = self._instance.adjacency_list[root]
+                for neighbor, label in solution[root]:
+                    solution[neighbor].add((root, label))
+                new_solutions.append(self._dfs_tree(root, solution))
             else:
                 new_solutions.append(solution)
 
         return new_solutions
 
-    def _select_solution(self, population: List[List[Edge]]) -> Tuple[List[Edge], int, float]:
+    def _select_solution(self, population:  List[DefaultDict[int, Set[Tuple[int, int]]]]) -> Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]:
         '''Returns the best solution of a population.
 
         Args:
-            population (List[List[Edge]]): Population.
+            population: Population.
 
         Returns:
             Best solution from the population.
@@ -242,14 +224,13 @@ class GeneticAlgorithm:
         evaluated_pop = self._evaluate_population(population)
         return min(evaluated_pop, key=lambda x: x[1])
 
-    def _stopping_criterion(self, best_solution: Tuple[List[Edge], int, float], last_improvement: int, iteration: int) -> bool:
+    def _stopping_criterion(self, best_solution: Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float], last_improvement: int, iteration: int) -> bool:
         '''Decides if must stop the algorithm.
 
         Args:
-            best_solution (Tuple[List[Edge], int, float]): Best solution found in the last iteration,
-                already evaluated. 
-            last_improvement (int): Last iteration in which a better solution was found.
-            iteration (int):  Number of executed iterations.
+            best_solution: Best solution found in the last iteration, already evaluated. 
+            last_improvement: Last iteration in which a better solution was found.
+            iteration:  Number of executed iterations.
 
         Returns:
             True if the algorithm must stop. False otherwise.

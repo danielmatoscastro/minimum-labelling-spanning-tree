@@ -27,6 +27,12 @@ def run(file, population_size, mutation_rate, elitism_rate, output_file):
         print(f'Solution fitness: {solution[1]}')
         print(f'Execution time: {stop_time - start_time}')
 
+        solution_edges = []
+        for node, neighbors in solution[0].items():
+            for neighbor, label in neighbors:
+                if (neighbor, node, label) not in solution_edges:
+                    solution_edges.append((node, neighbor, label))
+
         output = {
             'parameters': {
                 'instance': file,
@@ -36,7 +42,8 @@ def run(file, population_size, mutation_rate, elitism_rate, output_file):
                 'elitism-rate': elitism_rate
             },
             'solution-fitness': solution[1],
-            'execution-time': stop_time - start_time
+            'execution-time': stop_time - start_time,
+            'solution': solution_edges,
         }
 
         outputs.append(output)
@@ -48,7 +55,6 @@ def run(file, population_size, mutation_rate, elitism_rate, output_file):
         output_combined[f'execution-{i+1}'] = output
         fitness.append(output['solution-fitness'])
         times.append(output['execution-time'])
-
 
     output_combined['result'] = {
         'mean-solutions': sum(fitness) / 10,

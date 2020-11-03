@@ -1,4 +1,5 @@
-from typing import List
+from collections import defaultdict
+from typing import List, DefaultDict, Set, Tuple
 from .edge import Edge
 
 class Instance:
@@ -6,6 +7,10 @@ class Instance:
         self._nodes = nodes
         self._edges = edges
         self._labels = labels
+        self._adjacency_list = defaultdict(set)
+        for edge in self._edges:
+            self._adjacency_list[edge.u].add((edge.v, edge.l))
+            self._adjacency_list[edge.v].add((edge.u, edge.l))
 
     @property
     def nodes(self) -> List[int]:
@@ -14,6 +19,10 @@ class Instance:
     @property
     def edges(self) -> List[Edge]:
         return self._edges
+
+    @property
+    def adjacency_list(self) -> DefaultDict[int, Set[Tuple[int, int]]]:
+        return self._adjacency_list
 
     @staticmethod
     def load(path: str) -> "Instance":
