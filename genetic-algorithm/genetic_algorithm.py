@@ -2,7 +2,7 @@ from collections import defaultdict
 import random
 from typing import List, Tuple, Set, DefaultDict
 from math import ceil
-from model.instance import Instance
+from instance import Instance
 
 MAX_ITERATIONS = 2000
 MAX_ITERATIONS_WITHOUT_IMPROVING = 2000

@@ -1,7 +1,7 @@
 import click
 import time
 import json
-from model.instance import Instance
+from instance import Instance
 from genetic_algorithm import GeneticAlgorithm
 
 @click.command()
