@@ -7,6 +7,14 @@ from genetic_algorithm import GeneticAlgorithm
 from igraph import Graph
 from igraph import plot as _plot
 
+def get_solution_edges(solution):
+    solution_edges = []
+    for node, neighbors in solution[0].items():
+        for neighbor, label in neighbors:
+            if (neighbor, node, label) not in solution_edges:
+                solution_edges.append((node, neighbor, label))
+    return solution_edges
+
 @click.group()
 def cli():
     pass
@@ -31,11 +39,7 @@ def run(file, seed, population_size, mutation_rate, elitism_rate, output_file):
     print(f'Solution fitness: {solution[1]}')
     print(f'Execution time: {stop_time - start_time}')
     
-    solution_edges = []
-    for node, neighbors in solution[0].items():
-        for neighbor, label in neighbors:
-            if (neighbor, node, label) not in solution_edges:
-                solution_edges.append((node, neighbor, label))
+    solution_edges = get_solution_edges(solution)
 
     output = {
         'parameters': {
@@ -52,6 +56,7 @@ def run(file, seed, population_size, mutation_rate, elitism_rate, output_file):
 
     with open(output_file, mode='w') as out_file:
         out_file.write(json.dumps(output, indent=2))        
+
 
 @cli.command()
 @click.option('--file', type=click.Path(exists=True), help='path to .json file')
@@ -86,11 +91,7 @@ def run_multiple(file, population_size, mutation_rate, elitism_rate, bks, output
         print(f'Solution fitness: {solution[1]}')
         print(f'Execution time: {stop_time - start_time}')
 
-        solution_edges = []
-        for node, neighbors in solution[0].items():
-            for neighbor, label in neighbors:
-                if (neighbor, node, label) not in solution_edges:
-                    solution_edges.append((node, neighbor, label))
+        solution_edges = get_solution_edges(solution)
 
         output = {
             'parameters': {
