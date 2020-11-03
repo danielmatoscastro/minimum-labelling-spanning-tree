@@ -8,6 +8,11 @@ MAX_ITERATIONS = 2000
 MAX_ITERATIONS_WITHOUT_IMPROVING = 2000
 BEST_POSSIBLE_FITNESS = 1
 
+Solution = DefaultDict[int, Set[Tuple[int, int]]]
+EvaluatedSolution = Tuple[Solution, int, float]
+Population = List[Solution]
+EvaluatedPopulation = List[EvaluatedSolution]
+
 class GeneticAlgorithm:
     '''Genetic Algorithm to solve the MLST problem.
    
@@ -27,7 +32,7 @@ class GeneticAlgorithm:
         self._elitism_rate = elitism_rate
         random.seed(seed)
 
-    def run(self) -> Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]:
+    def run(self) -> EvaluatedSolution:
         '''Runs the algorithm until reaching a stop criteria.
 
         Returns:
@@ -56,7 +61,7 @@ class GeneticAlgorithm:
 
         return best_solution
 
-    def _generate_initial_population(self) ->  List[DefaultDict[int, Set[Tuple[int, int]]]]:
+    def _generate_initial_population(self) ->  Population:
         ''' Generates the initial solutions.
         
         Each spanning tree is created by recording the selected edges during a DFS on the whole graph.
@@ -74,7 +79,7 @@ class GeneticAlgorithm:
 
         return population
 
-    def _dfs_tree(self, root: int, solution: DefaultDict[int, Set[Tuple[int, int]]] = None) -> DefaultDict[int, Set[Tuple[int, int]]]:
+    def _dfs_tree(self, root: int, solution: Solution = None) -> Solution:
         '''Generates a spanning tree through DFS.
 
         Args:
@@ -90,7 +95,7 @@ class GeneticAlgorithm:
 
         return self._dfs_tree_internal(root, {root, }, defaultdict(set), solution)
 
-    def _dfs_tree_internal(self, root: int, expanded_nodes: Set[int], new_solution: DefaultDict[int, Set[Tuple[int, int]]], solution: DefaultDict[int, Set[Tuple[int, int]]]) -> DefaultDict[int, Set[Tuple[int, int]]]:
+    def _dfs_tree_internal(self, root: int, expanded_nodes: Set[int], new_solution: Solution, solution: Solution) -> Solution:
         '''Generates a spanning tree through DFS.
 
         This method must not be used directly. Use the wrapper `self._dfs_tree` instead.
@@ -116,7 +121,7 @@ class GeneticAlgorithm:
 
         return new_solution
 
-    def _evaluate_population(self, population: List[DefaultDict[int, Set[Tuple[int, int]]]]) -> List[Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]]:
+    def _evaluate_population(self, population: Population) -> EvaluatedPopulation:
         '''Computes the absolute and relative fitness for each solution.
 
         Args:
@@ -142,7 +147,7 @@ class GeneticAlgorithm:
         sorted_result = sorted(result, key=lambda x: x[1])
         return sorted_result
 
-    def _elitism_operator(self, population: List[Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]], elite_size: int) -> List[DefaultDict[int, Set[Tuple[int, int]]]]:
+    def _elitism_operator(self, population: EvaluatedPopulation, elite_size: int) -> Population:
         '''Generates a list with the best solutions.
 
         Args:
@@ -154,7 +159,7 @@ class GeneticAlgorithm:
         '''
         return [solution for solution, _, _ in population[0:elite_size]]
 
-    def _crossover_operator(self, population: List[Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]], new_solutions_size: int) -> List[DefaultDict[int, Set[Tuple[int, int]]]]:
+    def _crossover_operator(self, population: EvaluatedPopulation, new_solutions_size: int) -> Population:
         '''Produces a new population applying crossover in the current population.
 
         This method implements the `roulette method`.
@@ -182,7 +187,7 @@ class GeneticAlgorithm:
 
         return new_solutions
 
-    def _mutation_operator(self, population: List[DefaultDict[int, Set[Tuple[int, int]]]]) ->List[DefaultDict[int, Set[Tuple[int, int]]]]:
+    def _mutation_operator(self, population: Population) -> Population:
         '''Applies random mutations in population.
 
         Each solution will be mutated with probability `self._mutation_rate`.
@@ -212,7 +217,7 @@ class GeneticAlgorithm:
 
         return new_solutions
 
-    def _select_solution(self, population:  List[DefaultDict[int, Set[Tuple[int, int]]]]) -> Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float]:
+    def _select_solution(self, population:  Population) -> EvaluatedSolution:
         '''Returns the best solution of a population.
 
         Args:
@@ -224,7 +229,7 @@ class GeneticAlgorithm:
         evaluated_pop = self._evaluate_population(population)
         return min(evaluated_pop, key=lambda x: x[1])
 
-    def _stopping_criterion(self, best_solution: Tuple[DefaultDict[int, Set[Tuple[int, int]]], int, float], last_improvement: int, iteration: int) -> bool:
+    def _stopping_criterion(self, best_solution: EvaluatedSolution, last_improvement: int, iteration: int) -> bool:
         '''Decides if must stop the algorithm.
 
         Args:
