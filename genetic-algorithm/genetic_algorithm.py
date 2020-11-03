@@ -61,7 +61,7 @@ class GeneticAlgorithm:
 
         return best_solution
 
-    def _generate_initial_population(self) ->  Population:
+    def _generate_initial_population(self) -> Population:
         ''' Generates the initial solutions.
         
         Each spanning tree is created by recording the selected edges during a DFS on the whole graph.
@@ -216,18 +216,6 @@ class GeneticAlgorithm:
                 new_solutions.append(solution)
 
         return new_solutions
-
-    def _select_solution(self, population:  Population) -> EvaluatedSolution:
-        '''Returns the best solution of a population.
-
-        Args:
-            population: Population.
-
-        Returns:
-            Best solution from the population.
-        '''
-        evaluated_pop = self._evaluate_population(population)
-        return min(evaluated_pop, key=lambda x: x[1])
 
     def _stopping_criterion(self, best_solution: EvaluatedSolution, last_improvement: int, iteration: int) -> bool:
         '''Decides if must stop the algorithm.
