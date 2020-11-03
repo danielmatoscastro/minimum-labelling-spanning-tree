@@ -10,8 +10,9 @@ from genetic_algorithm import GeneticAlgorithm
 @click.option('--population-size', type=click.INT, help='number of simultaneous solutions')
 @click.option('--mutation-rate', type=click.FLOAT, help='probability of mutation for each solution')
 @click.option('--elitism-rate', type=click.FLOAT, help='percentage of best solutions to be preserved')
+@click.option('--bks', type=click.INT, help='best known solution')
 @click.option('--output-file', type=click.STRING, help='path for output json file')
-def run(file, population_size, mutation_rate, elitism_rate, output_file):
+def run(file, population_size, mutation_rate, elitism_rate, bks, output_file):
     instance = Instance.load(file)
     outputs = []
     for i in range(1, 11):
@@ -44,24 +45,30 @@ def run(file, population_size, mutation_rate, elitism_rate, output_file):
             'solution-fitness': solution[1],
             'execution-time': stop_time - start_time,
             'solution': solution_edges,
+            'percentage-deviation': 100 * (solution[1] - bks) / bks
         }
 
         outputs.append(output)
 
     fitness = []
     times = []
+    percentage_deviation = []
     output_combined = dict()
     for i, output in enumerate(outputs):
         output_combined[f'execution-{i+1}'] = output
         fitness.append(output['solution-fitness'])
         times.append(output['execution-time'])
+        percentage_deviation.append(output['percentage-deviation'])
 
     output_combined['result'] = {
-        'mean-solutions': sum(fitness) / 10,
-        'mean-times': sum(times) / 10,
-        'std-solutions': stdev(fitness),
+        'average-solution': sum(fitness) / 10,
+        'average-time': sum(times) / 10,
+        'std-solution': stdev(fitness),
+        'std-time': stdev(times),
         'best-solution': min(fitness),
         'worst-solution': max(fitness),
+        'best-known-solution': bks,
+        'average-percentage-deviation': sum(percentage_deviation) / 10
     }
 
     with open(output_file, mode='w') as out_file:
