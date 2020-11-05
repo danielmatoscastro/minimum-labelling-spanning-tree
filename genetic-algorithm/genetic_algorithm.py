@@ -32,11 +32,11 @@ class GeneticAlgorithm:
         self._elitism_rate = elitism_rate
         random.seed(seed)
 
-    def run(self) -> EvaluatedSolution:
+    def run(self) -> Tuple[EvaluatedSolution, EvaluatedSolution]:
         '''Runs the algorithm until reaching a stop criteria.
 
         Returns:
-            Tuple with solution, absolute fitness, and relative fitness (in this order).
+            Tuple with first solution and last solution (in this order).
         '''
         elite_size = ceil(self._elitism_rate*self._population_size)
         new_solutions_size = self._population_size - elite_size
@@ -44,12 +44,15 @@ class GeneticAlgorithm:
         should_stop = False
         i = 1
         last_improvement = 1
+        first_solution = None
         best_solution = None
         while not should_stop:
             print(f'iteration {i}')
             evaluated_pop = self._evaluate_population(population)
             elite = self._elitism_operator(evaluated_pop, elite_size)
 
+            if i == 1:
+                first_solution = evaluated_pop[0]
             if not best_solution or best_solution[1] > evaluated_pop[0][1]:
                 best_solution = evaluated_pop[0]
                 last_improvement = i
@@ -59,7 +62,7 @@ class GeneticAlgorithm:
             should_stop = self._stopping_criterion(best_solution, last_improvement, i)
             i += 1
 
-        return best_solution
+        return (first_solution, best_solution)
 
     def _generate_initial_population(self) -> Population:
         ''' Generates the initial solutions.

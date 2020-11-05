@@ -26,10 +26,10 @@ var f {E} >= 0;
 
 minimize label_amount: sum {l in L} y[l];
 
-s.t. r1 {j in V diff {0}}: 
+s.t. r1 {j in V diff {1}}: 
     sum {i in V : (i,j) in E} x[i,j] = 1;
 
-s.t. r2 {j in V diff {0}}: 
+s.t. r2 {j in V diff {1}}: 
     (sum {i in V : (i,j) in E} f[i,j]) - (sum {i in V : (j,i) in E} f[j,i]) = 1;
 
 s.t. r3_1 {(i, j) in E}: 

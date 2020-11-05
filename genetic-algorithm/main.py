@@ -34,7 +34,7 @@ def run(file, seed, population_size, mutation_rate, elitism_rate, output_file):
                                 mutation_rate, 
                                 elitism_rate)
     start_time = time.time()
-    solution = algorithm.run()
+    first_solution, solution = algorithm.run()
     stop_time = time.time()
     print(f'Solution fitness: {solution[1]}')
     print(f'Execution time: {stop_time - start_time}')
@@ -49,6 +49,7 @@ def run(file, seed, population_size, mutation_rate, elitism_rate, output_file):
             'mutation-rate': mutation_rate,
             'elitism-rate': elitism_rate
         },
+        'first-solution-fitness': first_solution[1],
         'solution-fitness': solution[1],
         'execution-time': stop_time - start_time,
         'solution': solution_edges
@@ -86,7 +87,7 @@ def run_multiple(file, population_size, mutation_rate, elitism_rate, bks, output
                                     elitism_rate)
         print(f'Executing test {i}.')
         start_time = time.time()
-        solution = algorithm.run()
+        first_solution, solution = algorithm.run()
         stop_time = time.time()
         print(f'Solution fitness: {solution[1]}')
         print(f'Execution time: {stop_time - start_time}')
@@ -101,6 +102,7 @@ def run_multiple(file, population_size, mutation_rate, elitism_rate, bks, output
                 'mutation-rate': mutation_rate,
                 'elitism-rate': elitism_rate
             },
+            'first-solution-fitness': first_solution[1],
             'solution-fitness': solution[1],
             'execution-time': stop_time - start_time,
             'solution': solution_edges,
@@ -109,17 +111,20 @@ def run_multiple(file, population_size, mutation_rate, elitism_rate, bks, output
 
         outputs.append(output)
 
+    first_solution_fitness = []
     fitness = []
     times = []
     percentage_deviation = []
     output_combined = dict()
     for i, output in enumerate(outputs):
         output_combined[f'execution-{i+1}'] = output
+        first_solution_fitness.append(output['first-solution-fitness'])
         fitness.append(output['solution-fitness'])
         times.append(output['execution-time'])
         percentage_deviation.append(output['percentage-deviation'])
 
     output_combined['result'] = {
+        'average-first-solution': sum(first_solution_fitness) / 10,
         'average-solution': sum(fitness) / 10,
         'average-time': sum(times) / 10,
         'std-solution': stdev(fitness),
