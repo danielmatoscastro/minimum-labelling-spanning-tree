@@ -1,0 +1,613 @@
+{
+  "execution-1": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 1,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.975085258483887,
+    "solution": [
+      [
+        2,
+        6,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ],
+      [
+        6,
+        5,
+        1
+      ],
+      [
+        5,
+        8,
+        1
+      ],
+      [
+        8,
+        3,
+        3
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-2": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 2,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.564821243286133,
+    "solution": [
+      [
+        10,
+        9,
+        5
+      ],
+      [
+        9,
+        1,
+        4
+      ],
+      [
+        1,
+        3,
+        4
+      ],
+      [
+        3,
+        8,
+        3
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-3": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 3,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.744972229003906,
+    "solution": [
+      [
+        3,
+        8,
+        3
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-4": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 4,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.620259284973145,
+    "solution": [
+      [
+        3,
+        8,
+        3
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-5": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 5,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.602604389190674,
+    "solution": [
+      [
+        7,
+        8,
+        2
+      ],
+      [
+        8,
+        3,
+        3
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ],
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-6": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 6,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.93526291847229,
+    "solution": [
+      [
+        8,
+        3,
+        3
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ],
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-7": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 7,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.636083841323853,
+    "solution": [
+      [
+        4,
+        2,
+        3
+      ],
+      [
+        2,
+        6,
+        2
+      ],
+      [
+        6,
+        5,
+        1
+      ],
+      [
+        5,
+        8,
+        1
+      ],
+      [
+        8,
+        3,
+        3
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-8": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 8,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 24.71565270423889,
+    "solution": [
+      [
+        3,
+        8,
+        3
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-9": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 9,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 25.230576515197754,
+    "solution": [
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        5,
+        8,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        2,
+        4,
+        3
+      ],
+      [
+        8,
+        3,
+        3
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "execution-10": {
+    "parameters": {
+      "instance": "data/testFile_0_10_5.col",
+      "seed": 10,
+      "population-size": 400,
+      "mutation-rate": 0.2,
+      "elitism-rate": 0.3
+    },
+    "first-solution-fitness": 5,
+    "solution-fitness": 5,
+    "execution-time": 25.14514183998108,
+    "solution": [
+      [
+        6,
+        5,
+        1
+      ],
+      [
+        6,
+        2,
+        2
+      ],
+      [
+        5,
+        8,
+        1
+      ],
+      [
+        8,
+        3,
+        3
+      ],
+      [
+        8,
+        7,
+        2
+      ],
+      [
+        3,
+        1,
+        4
+      ],
+      [
+        1,
+        9,
+        4
+      ],
+      [
+        9,
+        10,
+        5
+      ],
+      [
+        2,
+        4,
+        3
+      ]
+    ],
+    "percentage-deviation": 0.0
+  },
+  "result": {
+    "average-first-solution": 5.0,
+    "average-solution": 5.0,
+    "average-time": 24.817046022415163,
+    "std-solution": 0.0,
+    "std-time": 0.23901559446297,
+    "best-solution": 5,
+    "worst-solution": 5,
+    "best-known-solution": 5,
+    "average-percentage-deviation": 0.0
+  }
+}
