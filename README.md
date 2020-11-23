@@ -6,7 +6,7 @@ An experiment with genetic algorithms.
 ```
 pip install click
 ```
-- igraph: lib to plot graphs. Installation is required only if you'll use the *plot* command (see section below).
+- igraph: lib to plot graphs.
 ```
 pip install python-igraph
 ```
