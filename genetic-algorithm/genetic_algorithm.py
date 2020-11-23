@@ -5,7 +5,6 @@ from math import ceil
 from instance import Instance
 
 MAX_ITERATIONS = 2000
-MAX_ITERATIONS_WITHOUT_IMPROVING = 2000
 BEST_POSSIBLE_FITNESS = 1
 
 Solution = DefaultDict[int, Set[Tuple[int, int]]]
@@ -43,7 +42,6 @@ class GeneticAlgorithm:
         population = self._generate_initial_population()
         should_stop = False
         i = 1
-        last_improvement = 1
         first_solution = None
         best_solution = None
         while not should_stop:
@@ -55,11 +53,10 @@ class GeneticAlgorithm:
                 first_solution = evaluated_pop[0]
             if not best_solution or best_solution[1] > evaluated_pop[0][1]:
                 best_solution = evaluated_pop[0]
-                last_improvement = i
 
             new_solutions = self._crossover_operator(evaluated_pop, new_solutions_size)
             population = elite + self._mutation_operator(new_solutions)
-            should_stop = self._stopping_criterion(best_solution, last_improvement, i)
+            should_stop = self._stopping_criterion(best_solution, i)
             i += 1
 
         return (first_solution, best_solution)
@@ -220,17 +217,15 @@ class GeneticAlgorithm:
 
         return new_solutions
 
-    def _stopping_criterion(self, best_solution: EvaluatedSolution, last_improvement: int, iteration: int) -> bool:
+    def _stopping_criterion(self, best_solution: EvaluatedSolution, iteration: int) -> bool:
         '''Decides if must stop the algorithm.
 
         Args:
             best_solution: Best solution found in the last iteration, already evaluated. 
-            last_improvement: Last iteration in which a better solution was found.
             iteration:  Number of executed iterations.
 
         Returns:
             True if the algorithm must stop. False otherwise.
         '''
         return best_solution[1] == BEST_POSSIBLE_FITNESS or \
-                iteration-last_improvement == MAX_ITERATIONS_WITHOUT_IMPROVING or \
                 iteration == MAX_ITERATIONS
