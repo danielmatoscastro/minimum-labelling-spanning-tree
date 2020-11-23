@@ -10,7 +10,7 @@ pip install click
 ```
 pip install python-igraph
 ```
-- pycairo and cairocffi: they're dependencies of igraph. Installation is required only if you'll use the *plot* command (see section below).
+- pycairo and cairocffi: they're dependencies of igraph.
 cairocffi is a fallback of pycairo, so you can install only one of these libs.
 ```
 pip install cairocffi
