@@ -1,4 +1,4 @@
-# Minimum Labelled Spanning Tree
+# Minimum Labelling Spanning Tree
 An experiment with genetic algorithms.
 
 ## Dependencies
